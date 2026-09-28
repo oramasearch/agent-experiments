@@ -19,3 +19,16 @@ uv run pytest
 ```
 
 See the [documentation index](docs/README.md) for the service contract and study workflow.
+
+## Study and confirmation contract
+
+An initial `experiment` turn reads dataset, feature, methodology, and optional solution facts
+through lake and returns `result.kind: proposal` with `confirm: true`. It performs no action. A
+follow-up turn must carry the reviewed object in `context.confirmed_proposal`; only then does the
+agent call `create_study`.
+
+`experiment_status` tails `study-events.<study>` and `run-metrics.<run>`, reports budget and trial
+progress, and stops trials with non-finite loss, exploding gradient norm, or a sustained
+overfitting gap. `experiment_explain` reports the best trial, parameter importance, next search,
+and caveats. Promotion requires the reviewed object in `context.confirmed_promotion`; plain text
+never authorizes `promote_trial`.

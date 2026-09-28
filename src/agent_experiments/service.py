@@ -6,7 +6,7 @@ import json
 import os
 import threading
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Protocol
@@ -68,6 +68,7 @@ def run_turn(
     from agent_experiments.agent import Turn, answer_turn
 
     conversation_id = str(body.get("conversation_id") or uuid.uuid4())
+    context = body.get("context") if isinstance(body.get("context"), dict) else {}
     turn = Turn(
         kind=kind,
         message=message,
@@ -75,12 +76,15 @@ def run_turn(
         lake_token=token,
         customer_id=str(body.get("customer_id") or ""),
         conversation_id=conversation_id,
-        context=body.get("context") if isinstance(body.get("context"), dict) else {},
+        context=context,
     )
+    runtime_client = client
+    if kind == "experiment" and not context.get("confirmed_proposal"):
+        runtime_client = runtime_client or OpenAI()
     answer = answer_turn(
         turn,
         state.history(conversation_id),
-        client or OpenAI(),
+        runtime_client,
         state.model,
         lake,
     )
@@ -90,7 +94,7 @@ def run_turn(
         "trace_id": trace_id,
         "agent": "agent-experiments",
         "prompt_version": PROMPT_VERSION,
-        "at": datetime.now(timezone.utc).isoformat(),
+        "at": datetime.now(UTC).isoformat(),
         "conversation_id": conversation_id,
         "kind": kind,
         "message": message,
@@ -119,7 +123,7 @@ def serve() -> int:
             self.end_headers()
             self.wfile.write(payload)
 
-        def do_GET(self) -> None:  # noqa: N802
+        def do_GET(self) -> None:
             if self.path == "/healthz":
                 self._send(
                     200,
@@ -133,7 +137,7 @@ def serve() -> int:
                 return
             self._send(404, {"ok": False, "error": "not found"})
 
-        def do_POST(self) -> None:  # noqa: N802
+        def do_POST(self) -> None:
             if self.path != "/v1/turn":
                 self._send(404, {"ok": False, "error": "not found"})
                 return
@@ -149,7 +153,7 @@ def serve() -> int:
                 return
             try:
                 answer = run_turn(body if isinstance(body, dict) else {}, state)
-            except Exception as error:
+            except Exception as error:  # noqa: BLE001
                 answer = {"ok": False, "error": f"{type(error).__name__}: {error}"}
             self._send(200 if answer.get("ok") else 422, answer)
 

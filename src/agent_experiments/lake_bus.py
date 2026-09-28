@@ -145,7 +145,7 @@ def run_task(
         _log(task=task_id, progress_not_published=str(error))
     try:
         answer = handle(claimed.get("body") or {})
-    except Exception as error:
+    except Exception as error:  # noqa: BLE001
         answer = {"ok": False, "error": f"{type(error).__name__}: {error}"}
     if answer.get("ok"):
         bus.publish(task_id, "result", result=answer)
