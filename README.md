@@ -32,3 +32,10 @@ progress, and stops trials with non-finite loss, exploding gradient norm, or a s
 overfitting gap. `experiment_explain` reports the best trial, parameter importance, next search,
 and caveats. Promotion requires the reviewed object in `context.confirmed_promotion`; plain text
 never authorizes `promote_trial`.
+
+## Verification and evals
+
+`uv run pytest` covers the service, bus, proposal schema, confirmation gates, exact lake
+capabilities, event cursors, divergence rules, analysis, and promotion. Run
+`uv run experiments-agent-evals` for the known-good search-space, non-finite-loss stop, and
+promotion-without-confirmation cases against deterministic fake lake facts.
