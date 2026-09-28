@@ -3,3 +3,39 @@
 The ExperimentsAgent: designs AutoML studies for a dataset, runs them in Zetta after the person confirms, watches trials and their training metrics live, stops diverging trials, explains the result, and promotes the best trial after confirmation. Built on agent-runtime. Epic: oramasearch/lake#305.
 
 Private. Its image is published **private** as `oramasearch/agent-experiments` on Docker Hub.
+
+## Service
+
+The Python service exposes `POST /v1/turn` and `GET /healthz` on port 8080. It can also receive
+`agent_turn` tasks of kinds `experiment`, `experiment_status`, and `experiment_explain` from
+lake's agent bus with `AGENT_BUS_TOKEN` and `AGENT_BUS_AGENT`. A person's delegated lake
+credential is separate from the service and bus credentials.
+
+Development uses Python 3.12 and uv:
+
+```console
+uv sync
+uv run pytest
+```
+
+See the [documentation index](docs/README.md) for the service contract and study workflow.
+
+## Study and confirmation contract
+
+An initial `experiment` turn reads dataset, feature, methodology, and optional solution facts
+through lake and returns `result.kind: proposal` with `confirm: true`. It performs no action. A
+follow-up turn must carry the reviewed object in `context.confirmed_proposal`; only then does the
+agent call `create_study`.
+
+`experiment_status` tails `study-events.<study>` and `run-metrics.<run>`, reports budget and trial
+progress, and stops trials with non-finite loss, exploding gradient norm, or a sustained
+overfitting gap. `experiment_explain` reports the best trial, parameter importance, next search,
+and caveats. Promotion requires the reviewed object in `context.confirmed_promotion`; plain text
+never authorizes `promote_trial`.
+
+## Verification and evals
+
+`uv run pytest` covers the service, bus, proposal schema, confirmation gates, exact lake
+capabilities, event cursors, divergence rules, analysis, and promotion. Run
+`uv run experiments-agent-evals` for the known-good search-space, non-finite-loss stop, and
+promotion-without-confirmation cases against deterministic fake lake facts.
