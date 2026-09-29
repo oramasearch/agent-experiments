@@ -23,10 +23,15 @@ def test_eval_workspace_exposes_known_good_facts() -> None:
 
     analysis = lake.read("analyze_dataset", {"dataset": "churn-accounts"})
     features = lake.read("plan_features", {"project": "retention"})
+    projects = lake.read("list_projects", {})
+    project = lake.read("get_project", {"name": "retention"})
     methodologies = lake.read("list_methodologies", {})
 
     assert analysis["target"] == "churned"
+    assert analysis["columns"][0]["name"] == "event_at"
     assert features["leakage_checks"] == "passed"
+    assert projects == {"projects": ["retention"]}
+    assert project["graphs"] == []
     assert (
         methodologies["methodologies"][0]["known_good_search_space"] == KNOWN_GOOD_SPACE
     )

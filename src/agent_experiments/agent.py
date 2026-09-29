@@ -24,11 +24,13 @@ OVERFITTING_POINTS = 3
 
 READ_CAPABILITIES = {
     "analyze_dataset",
+    "get_project",
     "get_run_metrics",
     "get_solution",
     "get_study",
     "get_study_analysis",
     "list_methodologies",
+    "list_projects",
     "list_studies",
     "list_trials",
     "plan_features",
@@ -239,11 +241,25 @@ def study_defects(study: dict[str, Any]) -> list[str]:
     unknown = sorted(set(study) - STUDY_FIELDS)
     if unknown:
         problems.append("unknown study fields: " + ", ".join(unknown))
-    for name in ("name", "project", "dataset", "methodology"):
+    for name in ("name", "methodology"):
         if not isinstance(study.get(name), str) or not str(study[name]).strip():
             problems.append(f"study.{name} must be a non-empty string")
-    if "pipeline" in study and not isinstance(study["pipeline"], str):
-        problems.append("study.pipeline must be a string")
+    for name in ("project", "pipeline", "dataset"):
+        if not isinstance(study.get(name), str):
+            problems.append(f"study.{name} must be a string")
+    project = study.get("project")
+    pipeline = study.get("pipeline")
+    dataset = study.get("dataset")
+    if isinstance(project, str) and isinstance(pipeline, str):
+        if project and not pipeline:
+            problems.append(
+                "study.project must be empty for a dataset study or paired with a pipeline"
+            )
+        if pipeline and not project:
+            problems.append("study.pipeline requires study.project")
+    if isinstance(dataset, str) and isinstance(pipeline, str):
+        if not dataset and not pipeline:
+            problems.append("study must name a dataset or a pipeline")
     if "from_defaults" in study and not isinstance(study["from_defaults"], bool):
         problems.append("study.from_defaults must be boolean")
     problems.extend(objective_defects(study.get("objective")))
@@ -495,6 +511,13 @@ def design(
     for repair in range(MAX_REPAIRS + 1):
         answer = model_answer(history, client, model, lake)
         problems = proposal_defects(answer)
+        study = answer.get("study")
+        if (
+            not problems
+            and answer.get("kind") == "proposal"
+            and isinstance(study, dict)
+        ):
+            problems.extend(reference_defects(study, lake))
         if not problems:
             break
         if repair < MAX_REPAIRS:
@@ -580,6 +603,72 @@ def question_result(reply: str) -> dict[str, Any]:
     }
 
 
+def reference_defects(study: dict[str, Any], lake: Lake) -> list[str]:
+    """Check every external study reference against current lake facts."""
+    problems: list[str] = []
+    dataset = str(study.get("dataset") or "")
+    methodology = str(study.get("methodology") or "")
+    project = str(study.get("project") or "")
+    pipeline = str(study.get("pipeline") or "")
+
+    if dataset:
+        try:
+            analysis = lake.read("analyze_dataset", {"dataset": dataset})
+        except LakeError as error:
+            problems.append(f"study.dataset does not resolve: {error.message}")
+        else:
+            if not any(
+                analysis.get(field) for field in ("table_id", "table", "dataset")
+            ):
+                problems.append("study.dataset did not resolve to a dataset")
+
+    try:
+        listed = lake.read("list_methodologies", {})
+    except LakeError as error:
+        problems.append(f"study.methodology could not be checked: {error.message}")
+    else:
+        methodologies = listed.get("methodologies")
+        methodologies = methodologies if isinstance(methodologies, list) else []
+        matches = [
+            item
+            for item in methodologies
+            if isinstance(item, dict)
+            and methodology in {str(item.get("id") or ""), str(item.get("name") or "")}
+        ]
+        if not matches:
+            problems.append(
+                f"study.methodology does not resolve to a listed methodology: {methodology}"
+            )
+        elif matches[0].get("runnable") is False:
+            problems.append(f"study.methodology is not runnable: {methodology}")
+
+    if project and pipeline:
+        try:
+            found = lake.read("get_project", {"name": project})
+        except LakeError as error:
+            problems.append(f"study.project does not resolve: {error.message}")
+        else:
+            graphs = found.get("graphs")
+            graphs = graphs if isinstance(graphs, list) else []
+            graph = next(
+                (
+                    item
+                    for item in graphs
+                    if isinstance(item, dict)
+                    and pipeline
+                    in {str(item.get("id") or ""), str(item.get("name") or "")}
+                ),
+                None,
+            )
+            if graph is None:
+                problems.append(
+                    f"study.pipeline does not exist in project {project}: {pipeline}"
+                )
+            elif graph.get("runnable") is False:
+                problems.append(f"study.pipeline is not runnable: {pipeline}")
+    return problems
+
+
 def run_confirmed(
     turn: Turn,
     confirmed: dict[str, Any],
@@ -598,6 +687,8 @@ def run_confirmed(
         "explanations": explanations,
     }
     problems = proposal_defects(candidate)
+    if not problems and isinstance(study, dict):
+        problems.extend(reference_defects(study, lake))
     if problems:
         return question_result(
             "The confirmed study proposal is invalid and was not started: "

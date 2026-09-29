@@ -9,6 +9,7 @@ import httpx
 
 from agent_experiments.agent import (
     Lake,
+    LakeError,
     Turn,
     answer_turn,
     divergence_reason,
@@ -92,6 +93,20 @@ def proposal() -> dict:
     }
 
 
+def dataset_proposal() -> dict:
+    candidate = proposal()
+    candidate["reply"] = (
+        "Using retention as the project context, review this dataset study before it starts."
+    )
+    candidate["study"]["project"] = ""
+    candidate["study"]["pipeline"] = ""
+    candidate["study"]["objective"]["validation_split"] = "validation"
+    candidate["explanations"]["validation_split"] = (
+        "Train on earlier event_at values and validate on the last period before test."
+    )
+    return candidate
+
+
 class Message:
     def __init__(self, content: str) -> None:
         self.content = content
@@ -99,6 +114,24 @@ class Message:
 
     def model_dump(self, exclude_none=True):
         return {"role": "assistant", "content": self.content}
+
+
+class LakeReadMessage:
+    def __init__(self, identifier: str, capability: str, inputs: dict) -> None:
+        self.content = None
+        self.tool_calls = [
+            SimpleNamespace(
+                id=identifier,
+                function=SimpleNamespace(
+                    arguments=json.dumps(
+                        {"capability": capability, "input": inputs}
+                    )
+                ),
+            )
+        ]
+
+    def model_dump(self, exclude_none=True):
+        return {"role": "assistant", "tool_calls": [{"id": self.tool_calls[0].id}]}
 
 
 class Scripted:
@@ -112,14 +145,71 @@ class Scripted:
         return SimpleNamespace(choices=[SimpleNamespace(message=message)])
 
 
+class ScriptedMessages:
+    def __init__(self, *messages) -> None:
+        self.messages = list(messages)
+        self.chat = SimpleNamespace(completions=SimpleNamespace(create=self.create))
+
+    def create(self, **_arguments):
+        message = self.messages.pop(0)
+        return SimpleNamespace(choices=[SimpleNamespace(message=message)])
+
+
 class FakeLake:
     def __init__(self) -> None:
         self.reads: list[tuple[str, dict]] = []
         self.writes: list[tuple[str, dict]] = []
         self.events: dict[str, list[dict]] = {}
+        self.projects = {
+            "retention": {
+                "id": "project-1",
+                "name": "retention",
+                "graphs": [
+                    {
+                        "id": "pipeline-1",
+                        "name": "production",
+                        "runnable": True,
+                    }
+                ],
+            }
+        }
 
     def read(self, capability, arguments):
         self.reads.append((capability, arguments))
+        if capability == "analyze_dataset":
+            if arguments.get("dataset") != "accounts-snapshot":
+                raise LakeError(capability, "not_found", "dataset was not found")
+            return {
+                "table_id": "table-1",
+                "database": "retention",
+                "table": "accounts-snapshot",
+                "columns": [
+                    {
+                        "name": "event_at",
+                        "semantic_type": "datetime",
+                        "role_candidates": ["time"],
+                    }
+                ],
+            }
+        if capability == "plan_features":
+            return {
+                "status": "ready",
+                "dataset": "retention.accounts-snapshot",
+                "methodology": "M-1",
+            }
+        if capability == "list_projects":
+            return {"projects": list(self.projects)}
+        if capability == "get_project":
+            project = self.projects.get(str(arguments.get("name") or ""))
+            if project is None:
+                raise LakeError(capability, "not_found", "project was not found")
+            return project
+        if capability == "list_methodologies":
+            return {
+                "methodologies": [
+                    {"id": "M-1", "name": "classification", "runnable": True}
+                ]
+            }
         if capability == "get_study":
             return {
                 "id": "study-1",
@@ -187,6 +277,100 @@ def test_initial_turn_returns_proposal_without_actions() -> None:
     assert lake.writes == []
 
 
+def dataset_design_client() -> ScriptedMessages:
+    return ScriptedMessages(
+        LakeReadMessage("read-1", "list_projects", {}),
+        LakeReadMessage("read-2", "get_project", {"name": "retention"}),
+        LakeReadMessage(
+            "read-3",
+            "analyze_dataset",
+            {"dataset": "accounts-snapshot", "label": "churned"},
+        ),
+        LakeReadMessage(
+            "read-4",
+            "plan_features",
+            {
+                "dataset": "accounts-snapshot",
+                "methodology": "M-1",
+                "label": "churned",
+                "time_column": "event_at",
+            },
+        ),
+        LakeReadMessage("read-5", "list_methodologies", {}),
+        Message(json.dumps(dataset_proposal())),
+    )
+
+
+def test_one_dataset_one_project_and_time_column_proposes_without_a_question() -> None:
+    lake = FakeLake()
+
+    answer = answer_turn(
+        turn(message="predict churned from accounts-snapshot"),
+        [],
+        dataset_design_client(),
+        "test-model",
+        lake,
+    )
+
+    assert answer["result"]["kind"] == "proposal"
+    assert answer["result"]["study"]["project"] == ""
+    assert answer["result"]["study"]["pipeline"] == ""
+    assert (
+        answer["result"]["study"]["objective"]["validation_split"]
+        == "validation"
+    )
+    assert "event_at" in answer["result"]["explanations"]["validation_split"]
+    assert ("list_projects", {}) in lake.reads
+    assert ("get_project", {"name": "retention"}) in lake.reads
+    assert lake.writes == []
+
+
+def test_project_without_a_pipeline_gives_a_dataset_study_that_starts() -> None:
+    lake = FakeLake()
+    lake.projects["retention"]["graphs"] = []
+
+    designed = answer_turn(
+        turn(message="predict churned from accounts-snapshot"),
+        [],
+        dataset_design_client(),
+        "test-model",
+        lake,
+    )
+    started = answer_turn(
+        turn(context={"confirmed_proposal": designed["result"]}),
+        [],
+        None,
+        "test-model",
+        lake,
+    )
+
+    study = designed["result"]["study"]
+    assert study["dataset"] == "accounts-snapshot"
+    assert study["project"] == ""
+    assert study["pipeline"] == ""
+    assert started["result"]["kind"] == "running"
+    assert lake.writes == [("create_study", study)]
+
+
+def test_dangling_pipeline_is_caught_before_the_proposal_is_shown() -> None:
+    lake = FakeLake()
+    dangling = proposal()
+    dangling["study"]["pipeline"] = "missing"
+
+    answer = answer_turn(
+        turn(),
+        [],
+        Scripted(dangling, dataset_proposal()),
+        "test-model",
+        lake,
+    )
+
+    assert answer["result"]["kind"] == "proposal"
+    assert answer["result"]["study"]["pipeline"] == ""
+    assert ("get_project", {"name": "retention"}) in lake.reads
+    assert lake.writes == []
+
+
 def test_plain_language_confirmation_is_not_authority() -> None:
     lake = FakeLake()
 
@@ -211,6 +395,24 @@ def test_confirmed_proposal_starts_exact_reviewed_study() -> None:
 
     assert answer["result"]["kind"] == "running"
     assert lake.writes == [("create_study", reviewed["study"])]
+
+
+def test_confirmed_proposal_rechecks_external_references() -> None:
+    lake = FakeLake()
+    reviewed = proposal()
+    reviewed["study"]["pipeline"] = "deleted-pipeline"
+
+    answer = answer_turn(
+        turn(context={"confirmed_proposal": reviewed}),
+        [],
+        None,
+        "test-model",
+        lake,
+    )
+
+    assert answer["result"]["kind"] == "question"
+    assert "does not exist" in answer["reply"]
+    assert lake.writes == []
 
 
 def test_proposal_rejects_test_split_bad_budget_and_forward_condition() -> None:

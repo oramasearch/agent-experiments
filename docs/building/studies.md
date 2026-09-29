@@ -1,9 +1,22 @@
 # Designing, running, watching, and explaining studies
 
-An `experiment` turn may read `analyze_dataset`, `plan_features`, `list_methodologies`, and
-`get_solution` through lake with the signed-in person's delegated credential. Its proposal names
-the project, dataset, methodology, non-test objective, ordered search space, sampler, pruner,
-finite budgets, and seed. It also explains every choice in plain words.
+An `experiment` turn may read `analyze_dataset`, `plan_features`, `list_projects`, `get_project`,
+`list_methodologies`, and `get_solution` through lake with the signed-in person's delegated
+credential. It uses a named project or the single relevant project without asking. A project and
+pipeline appear in the study only when `get_project` returns that runnable pipeline. Otherwise the
+proposal is dataset-based, with empty project and pipeline fields.
+
+When dataset analysis identifies a datetime column and no split was requested, the proposal uses
+an out-of-time validation split: earlier rows train the trials, the last period before test is the
+validation period, and the final period remains untouched. The explanation names the time column
+and ordering so the person can edit the default. The agent asks only when lake facts provide no
+sensible project, validation, objective, or budget default.
+
+Before displaying a proposal, the agent resolves its dataset, runnable methodology, and any
+project/pipeline pair through lake. It repeats those checks on the reviewed proposal before
+`create_study`, so a deleted or edited reference cannot reach the action call. The proposal also
+names the non-test objective, ordered search space, sampler, pruner, finite budgets, and seed, and
+explains every choice in plain words.
 
 The answer contract is:
 
