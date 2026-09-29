@@ -68,12 +68,29 @@ class EvalLake:
         if capability == "analyze_dataset":
             return {
                 "dataset": "churn-accounts",
+                "table_id": "table-churn-accounts",
+                "database": "retention",
+                "table": "churn-accounts",
                 "project": "retention",
                 "rows": 48_000,
                 "target": "churned",
                 "task": "binary_classification",
-                "validation_splits": ["validation"],
+                "columns": [
+                    {
+                        "name": "event_at",
+                        "semantic_type": "datetime",
+                        "role_candidates": ["time"],
+                    }
+                ],
                 "metrics": ["validation.auc", "validation.log_loss"],
+            }
+        if capability == "list_projects":
+            return {"projects": ["retention"]}
+        if capability == "get_project":
+            return {
+                "id": "project-retention",
+                "name": "retention",
+                "graphs": [],
             }
         if capability == "plan_features":
             return {
@@ -89,6 +106,7 @@ class EvalLake:
                     {
                         "id": "M-1",
                         "tasks": ["binary_classification"],
+                        "runnable": True,
                         "known_good_search_space": KNOWN_GOOD_SPACE,
                     }
                 ]
@@ -173,15 +191,30 @@ def grade_known_good(answer: dict[str, Any], lake: EvalLake) -> list[str]:
     reasons = proposal_defects(candidate)
     study = result.get("study")
     study = study if isinstance(study, dict) else {}
-    if study.get("objective") != {
-        "metric": "validation.auc",
-        "direction": "maximize",
-        "validation_split": "validation",
-    }:
-        reasons.append("objective does not use the known validation AUC target")
+    objective = study.get("objective")
+    objective = objective if isinstance(objective, dict) else {}
+    if (
+        objective.get("metric") != "validation.auc"
+        or objective.get("direction") != "maximize"
+    ):
+        reasons.append("objective does not use out-of-time validation AUC")
+    if study.get("project") or study.get("pipeline"):
+        reasons.append("project without a pipeline did not produce a dataset study")
+    explanation = result.get("explanations")
+    explanation = explanation if isinstance(explanation, dict) else {}
+    split_explanation = str(explanation.get("validation_split") or "").lower()
+    split_terms = ("event_at", "earlier", "last period", "test")
+    if not all(term in split_explanation for term in split_terms):
+        reasons.append("validation explanation does not describe the time-column default")
     if study.get("search_space") != KNOWN_GOOD_SPACE:
         reasons.append("proposal did not preserve the known-good search space")
-    required_reads = {"analyze_dataset", "plan_features", "list_methodologies"}
+    required_reads = {
+        "analyze_dataset",
+        "get_project",
+        "list_methodologies",
+        "list_projects",
+        "plan_features",
+    }
     missing_reads = sorted(required_reads - set(lake.reads))
     if missing_reads:
         reasons.append("missing lake reads: " + ", ".join(missing_reads))
@@ -198,7 +231,8 @@ def run_known_good(client: OpenAI, model: str) -> dict[str, Any]:
             (
                 "Design a bounded M-1 churn study for the retention project and "
                 "churn-accounts dataset. Use the lake methodology's known-good search space "
-                "unchanged, optimize validation AUC, and propose it without starting it."
+                "unchanged, default the time-based validation period, optimize validation AUC, "
+                "and propose it without starting it."
             ),
         ),
         [],

@@ -22,10 +22,13 @@ See the [documentation index](docs/README.md) for the service contract and study
 
 ## Study and confirmation contract
 
-An initial `experiment` turn reads dataset, feature, methodology, and optional solution facts
-through lake and returns `result.kind: proposal` with `confirm: true`. It performs no action. A
-follow-up turn must carry the reviewed object in `context.confirmed_proposal`; only then does the
-agent call `create_study`.
+An initial `experiment` turn reads dataset, project, pipeline, feature, methodology, and optional
+solution facts through lake and returns `result.kind: proposal` with `confirm: true`. It defaults a
+single relevant project and an out-of-time validation split when dataset time evidence supports
+them. A project without a suitable pipeline produces a dataset study instead of a placeholder
+pipeline. Every external reference is checked before review and checked again after confirmation.
+The initial turn performs no action. A follow-up turn must carry the reviewed object in
+`context.confirmed_proposal`; only then does the agent call `create_study`.
 
 `experiment_status` tails `study-events.<study>` and `run-metrics.<run>`, reports budget and trial
 progress, and stops trials with non-finite loss, exploding gradient norm, or a sustained
