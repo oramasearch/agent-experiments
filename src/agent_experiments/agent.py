@@ -36,7 +36,8 @@ READ_CAPABILITIES = {
     "plan_features",
     "receive_events",
 }
-POST_READS = {"analyze_dataset", "plan_features"}
+# Lake proxies every workspace read as GET and answers POST with 405 method_not_allowed.
+POST_READS: set[str] = set()
 ACTION_CAPABILITIES = {
     "create_study",
     "promote_trial",
