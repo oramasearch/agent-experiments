@@ -571,7 +571,9 @@ def test_lake_uses_exact_capability_routes_and_delegated_credential() -> None:
     ]
     assert requests[0].method == "GET"
     assert parse_qs(requests[0].url.query.decode())["study"] == ["study-1"]
-    assert requests[1].method == "POST"
+    # Lake serves workspace reads as GET only (POST is 405 method_not_allowed).
+    assert requests[1].method == "GET"
+    assert parse_qs(requests[1].url.query.decode())["dataset"] == ["accounts"]
     assert requests[2].method == "POST"
     assert all(
         request.headers["Authorization"] == "Bearer person-token"
