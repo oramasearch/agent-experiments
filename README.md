@@ -27,6 +27,9 @@ solution facts through lake and returns `result.kind: proposal` with `confirm: t
 single relevant project and an out-of-time validation split when dataset time evidence supports
 them. A project without a suitable pipeline produces a dataset study instead of a placeholder
 pipeline. Every external reference is checked before review and checked again after confirmation.
+The search space comes from the methodology's published `study_search_space`, and the complete
+study is preflighted with zetta's `validate_study` (the same checks as `create_study`, storing
+nothing); a rejection is fed back to the model with its path and reason before a person sees it.
 The initial turn performs no action. A follow-up turn must carry the reviewed object in
 `context.confirmed_proposal`; only then does the agent call `create_study`.
 

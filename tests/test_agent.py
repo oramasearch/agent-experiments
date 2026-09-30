@@ -210,6 +210,8 @@ class FakeLake:
                     {"id": "M-1", "name": "classification", "runnable": True}
                 ]
             }
+        if capability == "validate_study":
+            return {"valid": True, "reason": "", "path": ""}
         if capability == "get_study":
             return {
                 "id": "study-1",
@@ -579,3 +581,51 @@ def test_lake_uses_exact_capability_routes_and_delegated_credential() -> None:
         request.headers["Authorization"] == "Bearer person-token"
         for request in requests
     )
+
+
+def test_validate_study_failure_is_fed_back_as_a_defect() -> None:
+    from agent_experiments.agent import reference_defects
+
+    class Rejecting(FakeLake):
+        def read(self, capability, arguments):
+            if capability == "validate_study":
+                self.reads.append((capability, arguments))
+                return {
+                    "valid": False,
+                    "path": "/search_space/model_family/choices",
+                    "reason": "unsupported family 'linear'",
+                }
+            return super().read(capability, arguments)
+
+    lake = Rejecting()
+    problems = reference_defects(proposal()["study"], lake)
+    assert problems == [
+        "/search_space/model_family/choices: unsupported family 'linear'"
+    ]
+    assert ("validate_study", proposal()["study"]) in lake.reads
+
+
+def test_methodology_without_studies_is_rejected_before_validation() -> None:
+    from agent_experiments.agent import reference_defects
+
+    class NoStudies(FakeLake):
+        def read(self, capability, arguments):
+            if capability == "list_methodologies":
+                return {
+                    "methodologies": [
+                        {
+                            "id": "M-1",
+                            "runnable": True,
+                            "studies": False,
+                            "study_reason": "no study driver",
+                        }
+                    ]
+                }
+            return super().read(capability, arguments)
+
+    lake = NoStudies()
+    problems = reference_defects(proposal()["study"], lake)
+    assert problems == [
+        "study.methodology does not support studies: M-1 (no study driver)"
+    ]
+    assert not any(capability == "validate_study" for capability, _ in lake.reads)

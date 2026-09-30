@@ -35,6 +35,7 @@ READ_CAPABILITIES = {
     "list_trials",
     "plan_features",
     "receive_events",
+    "validate_study",
 }
 # Lake proxies every workspace read as GET and answers POST with 405 method_not_allowed.
 POST_READS: set[str] = set()
@@ -642,6 +643,14 @@ def reference_defects(study: dict[str, Any], lake: Lake) -> list[str]:
             )
         elif matches[0].get("runnable") is False:
             problems.append(f"study.methodology is not runnable: {methodology}")
+        elif matches[0].get("studies") is False:
+            reason = str(matches[0].get("study_reason") or "no study driver")
+            problems.append(
+                f"study.methodology does not support studies: {methodology} ({reason})"
+            )
+
+    if not problems:
+        problems.extend(validation_defects(study, lake))
 
     if project and pipeline:
         try:
@@ -708,6 +717,22 @@ def run_confirmed(
             "confirm": False,
         },
     }
+
+
+def validation_defects(study: dict[str, Any], lake: Lake) -> list[str]:
+    """Run zetta's create_study checks without creating anything (validate_study)."""
+    try:
+        verdict = lake.read("validate_study", study)
+    except LakeError as error:
+        if error.code in {"unknown_capability", "not_found", "not_allowed"}:
+            # An engine without the preflight: create_study still validates at confirm.
+            return []
+        return [f"study could not be validated: {error.message}"]
+    if verdict.get("valid", True):
+        return []
+    path = str(verdict.get("path") or "study")
+    reason = str(verdict.get("reason") or "the engine rejected the study")
+    return [f"{path}: {reason}"]
 
 
 def study_id_from_context(context: dict[str, Any]) -> str:
