@@ -82,8 +82,9 @@ def run_turn(
     runtime_client = client
     if kind == "experiment" and not context.get("confirmed_proposal"):
         # The model is reached through lake with the turn's own key, which counts its tokens in
-        # the turn's workspace (lake#248); this agent holds no provider key.
-        runtime_client = runtime_client or gateway_client(lake_url, token)
+        # the turn's workspace (lake#248); this agent holds no provider key. The turn's lake_url
+        # is the workspace's Zetta path, so the gateway is at lake's own root (LAKE_URL).
+        runtime_client = runtime_client or gateway_client(state.lake_url or lake_url, token)
     answer = answer_turn(
         turn,
         state.history(conversation_id),

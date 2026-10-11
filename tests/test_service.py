@@ -85,8 +85,11 @@ def test_turn_calls_its_model_through_lakes_gateway_with_the_turns_key(tmp_path,
         url, token, http_client=httpx.Client(transport=httpx.MockTransport(gateway))))
     state = State()
     state.trace_dir = tmp_path
+    state.lake_url = "http://lake:8080"
+    # lake hands ExperimentsAgent the workspace's Zetta path as lake_url; the gateway is at root.
     answer = run_turn({"kind": "experiment", "message": "design a study",
-                       "lake_token": "lat.task.secret", "lake_url": "http://lake:8080"}, state)
+                       "lake_token": "lat.task.secret",
+                       "lake_url": "http://lake:8080/w/ws-1/workspaces/c-1/zetta"}, state)
     assert answer["ok"] and answer["reply"] == "A study."
     assert [str(request.url) for request in seen] == ["http://lake:8080/openai/v1/chat/completions"]
     assert seen[0].headers["authorization"] == "Bearer lat.task.secret"
