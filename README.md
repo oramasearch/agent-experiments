@@ -20,6 +20,11 @@ uv run pytest
 
 See the [documentation index](docs/README.md) for the service contract and study workflow.
 
+**The model is reached through lake** (lake#248, lake `docs/api/model-gateway.md`): every call goes
+to `<lake_url>/openai/v1` with the turn's own `lake_token` as the API key (`model.py`), so lake
+counts its tokens in the turn's workspace and enforces the account's model-token limit. The service
+holds no `OPENAI_API_KEY`; only the offline evals, which run for no workspace, call OpenAI directly.
+
 ## Study and confirmation contract
 
 An initial `experiment` turn reads dataset, project, pipeline, feature, methodology, and optional
