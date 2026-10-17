@@ -1,6 +1,8 @@
 # Service and bus operation
 
 ExperimentsAgent serves `POST /v1/turn` and `GET /healthz` on `PORT`, which defaults to `8080`.
+`/healthz` answers `{ok, agent, version, model, prompt_version}`; `version` is the installed
+package version from `pyproject.toml`.
 Set `AGENT_SERVICE_TOKEN` to require a bearer token on direct turn requests. Each turn carries one
 of `experiment`, `experiment_status`, or `experiment_explain` in `kind`, plus the signed-in
 person's `lake_token`, `lake_url`, and optional `customer_id`. The agent uses that delegated

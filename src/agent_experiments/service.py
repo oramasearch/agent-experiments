@@ -8,6 +8,7 @@ import threading
 import uuid
 from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -44,6 +45,23 @@ class State:
     def history(self, conversation_id: str) -> list[dict[str, Any]]:
         with self.lock:
             return self.conversations.setdefault(conversation_id, [])
+
+
+def package_version() -> str:
+    try:
+        return version("agent-experiments")
+    except PackageNotFoundError:
+        return "unknown"
+
+
+def health(state: State) -> dict[str, Any]:
+    return {
+        "ok": True,
+        "agent": "agent-experiments",
+        "version": package_version(),
+        "model": state.model,
+        "prompt_version": PROMPT_VERSION,
+    }
 
 
 def run_turn(
@@ -129,15 +147,7 @@ def serve() -> int:
 
         def do_GET(self) -> None:
             if self.path == "/healthz":
-                self._send(
-                    200,
-                    {
-                        "ok": True,
-                        "agent": "agent-experiments",
-                        "model": state.model,
-                        "prompt_version": PROMPT_VERSION,
-                    },
-                )
+                self._send(200, health(state))
                 return
             self._send(404, {"ok": False, "error": "not found"})
 
