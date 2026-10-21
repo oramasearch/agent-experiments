@@ -13,8 +13,13 @@ The worker long-polls `receive_agent_tasks`, claims each task once, and publishe
 by a result or failure. The bus credential is used only for those three bus capabilities. The
 person's delegated credential remains inside the claimed task body.
 
-`EXPERIMENTS_AGENT_MODEL` selects the model. JSON traces are written under `TRACE_DIR`, which
-defaults to `/tmp/agent-experiments-traces`.
+`EXPERIMENTS_AGENT_MODEL` selects the model.
+
+A turn keeps nothing on the pod's disk (agent-experiments#11). The pod serves every workspace, and
+a turn's message and answer are that workspace's content, which belongs in its workspace Zetta. No
+trace file is written: the answer goes back on the bus (or in the `/v1/turn` response) with its
+`trace_id`, and lake keeps it in the task's record in the turn's workspace Zetta (lake
+`docs/api/agent-bus.md`). `TRACE_DIR` is no longer read.
 
 The image runs as UID 10001, exposes port 8080, and is private as
 `oramasearch/agent-experiments`. The repository and image must remain private.
