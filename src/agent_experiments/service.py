@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 
+import hmac
 import json
 import os
 import threading
 import uuid
-from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib.metadata import PackageNotFoundError, version
-from pathlib import Path
 from typing import Any, Protocol
+from urllib.parse import urlsplit
 
 from openai import OpenAI
 
@@ -36,9 +36,6 @@ class State:
         self.model = os.environ.get("EXPERIMENTS_AGENT_MODEL", "gpt-5.5")
         self.token = os.environ.get("AGENT_SERVICE_TOKEN", "")
         self.lake_url = os.environ.get("LAKE_URL", "")
-        self.trace_dir = Path(
-            os.environ.get("TRACE_DIR", "/tmp/agent-experiments-traces")
-        )
         self.lock = threading.Lock()
         self.conversations: dict[str, list[dict[str, Any]]] = {}
 
@@ -64,6 +61,47 @@ def health(state: State) -> dict[str, Any]:
     }
 
 
+DEFAULT_PORTS = {"http": 80, "https": 443}
+
+
+def _origin(url: str) -> tuple[str, str, int] | None:
+    """`(scheme, host, port)` of an absolute http(s) URL with no user info, or None."""
+    try:
+        parts = urlsplit(url)
+        port = parts.port
+    except ValueError:
+        return None
+    scheme = parts.scheme.lower()
+    if scheme not in DEFAULT_PORTS or not parts.hostname or "@" in parts.netloc:
+        return None
+    return scheme, parts.hostname.lower(), port or DEFAULT_PORTS[scheme]
+
+
+def workspace_url(requested: str, lake: str) -> str | None:
+    """The turn's `lake_url` when it is on Lake at `LAKE_URL`, else None.
+
+    Lake hands this agent the person's workspace path as `lake_url`
+    (`<LAKE_URL>/w/<workspace>/workspaces/<customer>/zetta`), and the turn's credential is sent
+    there. The address comes from the request, so it is accepted only on Lake's own origin (scheme,
+    host and port of `LAKE_URL`) under `LAKE_URL`'s path, with no user info, query or fragment;
+    anything else would send the bearer to a host the caller chose (agent-experiments#18).
+    """
+    want = _origin(lake)
+    got = _origin(requested)
+    if want is None or got is None or got != want:
+        return None
+    parts, base = urlsplit(requested), urlsplit(lake)
+    if parts.query or parts.fragment or "\\" in requested:
+        return None
+    prefix = base.path.rstrip("/")
+    path = parts.path
+    if prefix and not (path == prefix or path.startswith(prefix + "/")):
+        return None
+    if any(segment in (".", "..") for segment in path.split("/")):
+        return None
+    return requested.rstrip("/")
+
+
 def run_turn(
     body: dict[str, Any],
     state: State,
@@ -73,7 +111,10 @@ def run_turn(
     kind = str(body.get("kind") or "")
     message = str(body.get("message") or "")
     token = str(body.get("lake_token") or "")
-    lake_url = str(body.get("lake_url") or state.lake_url)
+    # The turn's credential goes only to Lake at this service's own LAKE_URL, never to an address
+    # the request names (agent-experiments#18).
+    lake = state.lake_url.strip().rstrip("/")
+    lake_url = str(body.get("lake_url") or lake)
     if kind not in TURN_KINDS:
         return {
             "ok": False,
@@ -84,6 +125,20 @@ def run_turn(
             "ok": False,
             "error": "a turn needs a message, the person's lake_token and lake URL",
         }
+    if _origin(lake) is None:
+        return {
+            "ok": False,
+            "error": "LAKE_URL is not set: this agent sends a turn's credential only to Lake's "
+            "configured address",
+        }
+    checked = workspace_url(lake_url, lake)
+    if checked is None:
+        return {
+            "ok": False,
+            "error": "lake_url is not on Lake at LAKE_URL; the turn's credential is never sent "
+            "elsewhere",
+        }
+    lake_url = checked
     from agent_experiments.agent import Turn, answer_turn
 
     conversation_id = str(body.get("conversation_id") or uuid.uuid4())
@@ -101,8 +156,9 @@ def run_turn(
     if kind == "experiment" and not context.get("confirmed_proposal"):
         # The model is reached through lake with the turn's own key, which counts its tokens in
         # the turn's workspace (lake#248); this agent holds no provider key. The turn's lake_url
-        # is the workspace's Zetta path, so the gateway is at lake's own root (LAKE_URL).
-        runtime_client = runtime_client or gateway_client(state.lake_url or lake_url, token)
+        # is the workspace's Zetta path, so the gateway is at lake's own root (LAKE_URL), never
+        # the turn's address (agent-experiments#18).
+        runtime_client = runtime_client or gateway_client(lake, token)
     answer = answer_turn(
         turn,
         state.history(conversation_id),
@@ -110,27 +166,32 @@ def run_turn(
         state.model,
         lake,
     )
+    # The trace id names the turn; lake stores it with the answer in the turn's workspace Zetta.
+    # Nothing is written to the pod's disk: the pod serves every tenant, and the message and the
+    # answer are workspace content (agent-experiments#11).
     trace_id = str(uuid.uuid4())
-    state.trace_dir.mkdir(parents=True, exist_ok=True)
-    trace = {
-        "trace_id": trace_id,
-        "agent": "agent-experiments",
-        "prompt_version": PROMPT_VERSION,
-        "at": datetime.now(UTC).isoformat(),
-        "conversation_id": conversation_id,
-        "kind": kind,
-        "message": message,
-        "answer": answer,
-    }
-    (state.trace_dir / f"{trace_id}.json").write_text(
-        json.dumps(trace, indent=1, default=str)
-    )
     return {
         "ok": True,
         "conversation_id": conversation_id,
         "trace_id": trace_id,
         **answer,
     }
+
+
+def turn_refusal(authorization: str | None, token: str) -> tuple[int, str] | None:
+    """Why `POST /v1/turn` is refused, as `(status, error)`, or None when the caller may proceed.
+
+    The route fails closed: with `AGENT_SERVICE_TOKEN` unset or empty every turn is refused, so a
+    service started without it is never open. The bearer is compared in constant time
+    (`hmac.compare_digest` over bytes), so the comparison's timing says nothing about the token.
+    """
+    if not token:
+        return 503, "AGENT_SERVICE_TOKEN is not set; this service refuses every turn"
+    expected = f"Bearer {token}".encode()
+    supplied = (authorization or "").encode("utf-8", "surrogateescape")
+    if not hmac.compare_digest(supplied, expected):
+        return 401, "unauthorized"
+    return None
 
 
 def serve() -> int:
@@ -155,9 +216,10 @@ def serve() -> int:
             if self.path != "/v1/turn":
                 self._send(404, {"ok": False, "error": "not found"})
                 return
-            authorization = self.headers.get("Authorization")
-            if state.token and authorization != f"Bearer {state.token}":
-                self._send(401, {"ok": False, "error": "unauthorized"})
+            refusal = turn_refusal(self.headers.get("Authorization"), state.token)
+            if refusal is not None:
+                status, error = refusal
+                self._send(status, {"ok": False, "error": error})
                 return
             try:
                 length = int(self.headers.get("Content-Length", "0"))

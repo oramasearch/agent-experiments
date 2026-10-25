@@ -7,7 +7,6 @@ from agent_experiments.service import State, run_turn
 
 def test_turn_requires_supported_kind_person_credential_and_lake_url(tmp_path) -> None:
     state = State()
-    state.trace_dir = tmp_path
 
     missing_kind = run_turn({"message": "design a study"}, state)
     missing_credential = run_turn(
@@ -21,9 +20,13 @@ def test_turn_requires_supported_kind_person_credential_and_lake_url(tmp_path) -
     assert "lake_token" in missing_credential["error"]
 
 
-def test_turn_preserves_result_contract_and_writes_trace(tmp_path, monkeypatch) -> None:
+def test_turn_preserves_result_contract_and_keeps_nothing_on_disk(tmp_path, monkeypatch) -> None:
+    """agent-experiments#11: the pod serves every tenant, and the message and the answer are
+    workspace content, so a turn writes no trace file, even when the operator still sets
+    TRACE_DIR. Lake keeps the answer in the turn's workspace Zetta."""
+    monkeypatch.setenv("TRACE_DIR", str(tmp_path / "traces"))
+    monkeypatch.setenv("TMPDIR", str(tmp_path / "tmp"))
     state = State()
-    state.trace_dir = tmp_path
     expected = {
         "reply": "Ready to review.",
         "result": {
@@ -52,9 +55,9 @@ def test_turn_preserves_result_contract_and_writes_trace(tmp_path, monkeypatch) 
 
     assert answer["ok"]
     assert answer["result"] == expected["result"]
-    traces = list(tmp_path.glob("*.json"))
-    assert len(traces) == 1
-    assert '"kind": "experiment"' in traces[0].read_text()
+    assert answer["trace_id"], "the turn is still named, for lake to store with the answer"
+    assert [path for path in tmp_path.rglob("*") if path.is_file()] == []
+    assert not hasattr(state, "trace_dir")
 
 
 def test_turn_calls_its_model_through_lakes_gateway_with_the_turns_key(tmp_path, monkeypatch) -> None:
@@ -84,7 +87,6 @@ def test_turn_calls_its_model_through_lakes_gateway_with_the_turns_key(tmp_path,
     monkeypatch.setattr(service, "gateway_client", lambda url, token: model.gateway_client(
         url, token, http_client=httpx.Client(transport=httpx.MockTransport(gateway))))
     state = State()
-    state.trace_dir = tmp_path
     state.lake_url = "http://lake:8080"
     # lake hands ExperimentsAgent the workspace's Zetta path as lake_url; the gateway is at root.
     answer = run_turn({"kind": "experiment", "message": "design a study",
