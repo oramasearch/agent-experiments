@@ -107,3 +107,26 @@ def test_health_reports_the_installed_version_and_prompt_version() -> None:
     assert body["ok"] and body["agent"] == "agent-experiments"
     assert body["version"] == version("agent-experiments")
     assert body["prompt_version"] == PROMPT_VERSION
+
+
+def test_a_turn_without_a_lake_client_lets_the_agent_open_its_own(monkeypatch) -> None:
+    """The Lake URL from LAKE_URL is never handed to the agent as its Lake client: with none
+    given, answer_turn opens its own (a string there failed every Experiments turn, T12)."""
+    state = State()
+    seen: dict[str, object] = {}
+
+    def answer_turn(turn, history, client, model, lake=None):
+        seen["lake"] = lake
+        return {"reply": "watching", "result": {"kind": "status"}}
+
+    module = SimpleNamespace(Turn=lambda **values: values, answer_turn=answer_turn)
+    monkeypatch.setitem(__import__("sys").modules, "agent_experiments.agent", module)
+
+    answer = run_turn(
+        {"kind": "experiment_status", "message": "how is it going", "lake_token": "person-token",
+         "lake_url": state.lake_url or "https://lake.test"},
+        state,
+    )
+
+    assert answer["ok"], answer
+    assert seen["lake"] is None
