@@ -113,8 +113,8 @@ def run_turn(
     token = str(body.get("lake_token") or "")
     # The turn's credential goes only to Lake at this service's own LAKE_URL, never to an address
     # the request names (agent-experiments#18).
-    lake = state.lake_url.strip().rstrip("/")
-    lake_url = str(body.get("lake_url") or lake)
+    lake_root = state.lake_url.strip().rstrip("/")
+    lake_url = str(body.get("lake_url") or lake_root)
     if kind not in TURN_KINDS:
         return {
             "ok": False,
@@ -125,13 +125,13 @@ def run_turn(
             "ok": False,
             "error": "a turn needs a message, the person's lake_token and lake URL",
         }
-    if _origin(lake) is None:
+    if _origin(lake_root) is None:
         return {
             "ok": False,
             "error": "LAKE_URL is not set: this agent sends a turn's credential only to Lake's "
             "configured address",
         }
-    checked = workspace_url(lake_url, lake)
+    checked = workspace_url(lake_url, lake_root)
     if checked is None:
         return {
             "ok": False,
@@ -158,7 +158,7 @@ def run_turn(
         # the turn's workspace (lake#248); this agent holds no provider key. The turn's lake_url
         # is the workspace's Zetta path, so the gateway is at lake's own root (LAKE_URL), never
         # the turn's address (agent-experiments#18).
-        runtime_client = runtime_client or gateway_client(lake, token)
+        runtime_client = runtime_client or gateway_client(lake_root, token)
     answer = answer_turn(
         turn,
         state.history(conversation_id),
