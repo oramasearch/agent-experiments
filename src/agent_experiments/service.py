@@ -143,6 +143,7 @@ def run_turn(
 
     conversation_id = str(body.get("conversation_id") or uuid.uuid4())
     context = body.get("context") if isinstance(body.get("context"), dict) else {}
+    headers = lake_bus.task_headers(body)
     turn = Turn(
         kind=kind,
         message=message,
@@ -151,6 +152,7 @@ def run_turn(
         customer_id=str(body.get("customer_id") or ""),
         conversation_id=conversation_id,
         context=context,
+        lake_headers=headers,
     )
     runtime_client = client
     if kind == "experiment" and not context.get("confirmed_proposal"):
@@ -158,7 +160,7 @@ def run_turn(
         # the turn's workspace (lake#248); this agent holds no provider key. The turn's lake_url
         # is the workspace's Zetta path, so the gateway is at lake's own root (LAKE_URL), never
         # the turn's address (agent-experiments#18).
-        runtime_client = runtime_client or gateway_client(lake_root, token)
+        runtime_client = runtime_client or gateway_client(lake_root, token, headers=headers)
     answer = answer_turn(
         turn,
         state.history(conversation_id),
