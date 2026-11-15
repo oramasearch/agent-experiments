@@ -30,6 +30,8 @@ def test_bus_uses_agent_credential_and_task_credential_stays_in_body() -> None:
 
 
 class RecordingBus:
+    token = "bus-token"
+
     def __init__(self) -> None:
         self.events: list[tuple[str, str, str, dict | None]] = []
 

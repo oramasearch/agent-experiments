@@ -98,6 +98,9 @@ class Turn:
     customer_id: str = ""
     conversation_id: str = ""
     context: dict[str, Any] = field(default_factory=dict)
+    # Sent with `lake_token` on every call to Lake for the turn: `X-Lake-Agent-Task` when the turn
+    # was claimed by reference (lake#871), empty otherwise.
+    lake_headers: dict[str, str] = field(default_factory=dict)
 
 
 class LakeError(Exception):
@@ -119,7 +122,10 @@ class Lake:
         self.client = httpx.Client(
             base_url=turn.lake_url.rstrip("/"),
             timeout=180.0,
-            headers={"Authorization": f"Bearer {turn.lake_token}"},
+            headers={
+                **turn.lake_headers,
+                "Authorization": f"Bearer {turn.lake_token}",
+            },
             transport=transport,
         )
 

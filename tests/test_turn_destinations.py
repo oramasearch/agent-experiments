@@ -23,7 +23,7 @@ def calls(monkeypatch, tmp_path):
         seen["lake"].append(turn["lake_url"])
         return {"reply": "ok", "result": {}}
 
-    def gateway_client(url, token):
+    def gateway_client(url, token, **kwargs):
         seen["model"].append(url)
         return SimpleNamespace()
 

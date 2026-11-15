@@ -12,7 +12,10 @@ The Python service exposes `POST /v1/turn` and `GET /healthz` on port 8080; `/he
 the package `version` and `prompt_version`. It can also receive
 `agent_turn` tasks of kinds `experiment`, `experiment_status`, and `experiment_explain` from
 lake's agent bus with `AGENT_BUS_TOKEN` and `AGENT_BUS_AGENT`. A person's delegated lake
-credential is separate from the service and bus credentials.
+credential is separate from the service and bus credentials. Bus tasks are claimed by reference
+(lake#871): no task credential reaches the process, and every call made for a task carries the bus
+credential and `X-Lake-Agent-Task: <task id>`, falling back to the body's credential on a Lake that
+refuses it ([service and bus operation](docs/operations/service.md)).
 
 Development uses Python 3.12 and uv:
 
@@ -57,7 +60,7 @@ never authorizes `promote_trial`.
 
 ## Verification and evals
 
-`uv run pytest` covers the service, bus, proposal schema, confirmation gates, exact lake
+`uv run pytest` covers the service, bus (with claims by reference, `tests/test_by_reference.py`), proposal schema, confirmation gates, exact lake
 capabilities, event cursors, divergence rules, analysis, and promotion. Run
 `uv run experiments-agent-evals` for the known-good search-space, non-finite-loss stop, and
 promotion-without-confirmation cases against deterministic fake lake facts.
