@@ -1,4 +1,6 @@
 # syntax=docker/dockerfile:1
+# SPDX-License-Identifier: MIT
+
 # ExperimentsAgent is private on Docker Hub as oramasearch/agent-experiments.
 FROM python:3.12-slim AS build
 COPY --from=ghcr.io/astral-sh/uv:0.11.7 /uv /usr/local/bin/uv

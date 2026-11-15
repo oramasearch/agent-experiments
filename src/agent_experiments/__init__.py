@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 """ExperimentsAgent service entry point."""
 
 from agent_experiments.service import serve

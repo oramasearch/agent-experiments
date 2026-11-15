@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 """Receive ExperimentsAgent turns from lake's agent bus."""
 
 from __future__ import annotations

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 """Design, run, watch, explain, and promote AutoML studies."""
 
 from __future__ import annotations
