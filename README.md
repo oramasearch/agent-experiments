@@ -36,6 +36,12 @@ is always `LAKE_URL`. A turn's `lake_url`, the workspace path Lake hands the age
 refuses the turn before a request is made. Without a `lake_url`, the turn uses `LAKE_URL` itself.
 With `LAKE_URL` unset, every turn is refused.
 
+**Conversation history is bound to the workspace and bounded** (#35). The pod keeps a design
+conversation's messages in memory keyed by the turn's customer, workspace and conversation id, so a
+turn from another workspace with the same id starts empty. At most 256 conversations are kept, an
+idle one expires after an hour, and each keeps at most 60 messages and 200,000 characters after its
+system prompt ([service operation](docs/operations/service.md#conversation-history-agent-experiments35)).
+
 ## Study and confirmation contract
 
 An initial `experiment` turn reads dataset, project, pipeline, feature, methodology, and optional
