@@ -6,6 +6,8 @@ Current release: [v0.2.2](docs/releases/v0.2.2.md).
 
 Private. Its image is published **private** as `oramasearch/agent-experiments` on Docker Hub.
 
+The Dockerfile pins its bases by multi-platform index digest (lake#1003): `python:3.12-slim@sha256:5e2bdb1b…` for both stages and `ghcr.io/astral-sh/uv:0.11.7@sha256:240fb85a…`. Moving one is a reviewed change of its digest.
+
 ## Service
 
 The Python service exposes `POST /v1/turn` and `GET /healthz` on port 8080; `/healthz` reports
