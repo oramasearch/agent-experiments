@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 """HTTP and bus surfaces for ExperimentsAgent."""
 
 from __future__ import annotations
@@ -15,6 +17,7 @@ from urllib.parse import urlsplit
 from openai import OpenAI
 
 from agent_experiments import lake_bus
+from agent_experiments.conversations import ConversationStore, conversation_key
 from agent_experiments.model import gateway_client
 
 PROMPT_VERSION = "v1"
@@ -37,11 +40,9 @@ class State:
         self.token = os.environ.get("AGENT_SERVICE_TOKEN", "")
         self.lake_url = os.environ.get("LAKE_URL", "")
         self.lock = threading.Lock()
-        self.conversations: dict[str, list[dict[str, Any]]] = {}
-
-    def history(self, conversation_id: str) -> list[dict[str, Any]]:
-        with self.lock:
-            return self.conversations.setdefault(conversation_id, [])
+        # Keyed by the turn's workspace and conversation, bounded and expiring
+        # (agent-experiments#35); see conversations.py.
+        self.conversations = ConversationStore()
 
 
 def package_version() -> str:
@@ -159,13 +160,19 @@ def run_turn(
         # is the workspace's Zetta path, so the gateway is at lake's own root (LAKE_URL), never
         # the turn's address (agent-experiments#18).
         runtime_client = runtime_client or gateway_client(lake_root, token)
+    # The history is this workspace's conversation only: a turn from another workspace naming the
+    # same conversation id gets its own (agent-experiments#35). The turn works on a copy, saved
+    # back whole once it answers.
+    key = conversation_key(body, lake_url, conversation_id)
+    history = state.conversations.checkout(key)
     answer = answer_turn(
         turn,
-        state.history(conversation_id),
+        history,
         runtime_client,
         state.model,
         lake,
     )
+    state.conversations.store(key, history)
     # The trace id names the turn; lake stores it with the answer in the turn's workspace Zetta.
     # Nothing is written to the pod's disk: the pod serves every tenant, and the message and the
     # answer are workspace content (agent-experiments#11).
