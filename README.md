@@ -2,7 +2,7 @@
 
 The ExperimentsAgent: designs AutoML studies for a dataset, runs them in Zetta after the person confirms, watches trials and their training metrics live, stops diverging trials, explains the result, and promotes the best trial after confirmation. Built on agent-runtime.
 
-Current release: [v0.2.2](docs/releases/v0.2.2.md).
+Current release: [v0.3.0](docs/releases/v0.3.0.md).
 
 Its image is published as `oramasearch/agent-experiments` on Docker Hub.
 
