@@ -2,17 +2,17 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "agent-experiments-323e2a2a1c4b",
-  "documentNamespace": "https://github.com/oramasearch/agent-experiments/sbom/323e2a2a1c4b7695ecb0679257dcbf83ddc7be97",
+  "name": "agent-experiments-ec246d7cf9a4",
+  "documentNamespace": "https://github.com/oramasearch/agent-experiments/sbom/ec246d7cf9a494ba6d64ee4abd507d8e3a997f3d",
   "creationInfo": {
-    "created": "2026-11-15T17:25:39Z",
+    "created": "2026-11-16T01:54:18Z",
     "creators": [
       "Organization: OramaSearch, Inc.",
       "Tool: tools/sbom.py",
       "Tool: syft"
     ],
     "licenseListVersion": "3.29",
-    "comment": "Made from source commit 323e2a2a1c4b7695ecb0679257dcbf83ddc7be97 by tools/sbom.py."
+    "comment": "Made from source commit ec246d7cf9a494ba6d64ee4abd507d8e3a997f3d by tools/sbom.py."
   },
   "documentDescribes": [
     "SPDXRef-DocumentRoot"
@@ -200,7 +200,7 @@
     {
       "name": "agent-experiments",
       "SPDXID": "SPDXRef-DocumentRoot",
-      "versionInfo": "323e2a2a1c4b",
+      "versionInfo": "ec246d7cf9a4",
       "downloadLocation": "git+https://github.com/oramasearch/agent-experiments.git",
       "homepage": "https://github.com/oramasearch/agent-experiments",
       "filesAnalyzed": false,
