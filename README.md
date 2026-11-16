@@ -1,10 +1,10 @@
 # agent-experiments
 
-The ExperimentsAgent: designs AutoML studies for a dataset, runs them in Zetta after the person confirms, watches trials and their training metrics live, stops diverging trials, explains the result, and promotes the best trial after confirmation. Built on agent-runtime. Epic: oramasearch/lake#305.
+The ExperimentsAgent: designs AutoML studies for a dataset, runs them in Zetta after the person confirms, watches trials and their training metrics live, stops diverging trials, explains the result, and promotes the best trial after confirmation. Built on agent-runtime.
 
 Current release: [v0.2.2](docs/releases/v0.2.2.md).
 
-Private. Its image is published **private** as `oramasearch/agent-experiments` on Docker Hub.
+Its image is published as `oramasearch/agent-experiments` on Docker Hub.
 
 The Dockerfile pins its bases by multi-platform index digest (lake#1003): `python:3.12-slim@sha256:5e2bdb1b…` for both stages and `ghcr.io/astral-sh/uv:0.11.7@sha256:240fb85a…`. Moving one is a reviewed change of its digest.
 
@@ -31,7 +31,7 @@ to `<LAKE_URL>/openai/v1` with the turn's own `lake_token` as the API key (`mode
 counts its tokens in the turn's workspace and enforces the account's model-token limit. The service
 holds no `OPENAI_API_KEY`; only the offline evals, which run for no workspace, call OpenAI directly.
 
-**A turn's credential goes only to Lake at this service's own `LAKE_URL`** (#18). The model address
+**A turn's credential goes only to Lake at this service's own `LAKE_URL`**. The model address
 is always `LAKE_URL`. A turn's `lake_url`, the workspace path Lake hands the agent
 (`<LAKE_URL>/w/<workspace>/workspaces/<customer>/zetta`), is accepted only on `LAKE_URL`'s origin
 (scheme, host and port) under its path, with no user info, query or fragment; any other address

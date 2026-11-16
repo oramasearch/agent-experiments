@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 """Conversation history is bound to its workspace and bounded (agent-experiments#35)."""
 
 from __future__ import annotations

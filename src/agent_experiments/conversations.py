@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 """Conversation history held in the pod, bound to its workspace and bounded (agent-experiments#35).
 
 One pod answers turns from every workspace, so a conversation id alone is not an owner: a turn from
