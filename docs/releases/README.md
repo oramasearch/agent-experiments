@@ -10,6 +10,7 @@ verified; it is never produced by a second build.
 
 | Release | Date | Summary |
 |---|---|---|
+| [v0.3.0](v0.3.0.md) | 2026-11-16 | A minor release: conversation history bound to its workspace and bounded, the licence, the security policy, base images pinned by digest and the public-tree cleanup |
 | [v0.2.2](v0.2.2.md) | 2026-10-26 | A patch: the Lake URL is never passed to the agent as its Lake client, so Experiments turns run again |
 | [v0.2.1](v0.2.1.md) | 2026-10-26 | A patch: the Lake URL is never passed to the agent as its Lake client, so Experiments turns run again |
 | [v0.2.0](v0.2.0.md) | 2026-10-25 | Security fixes: no turn trace on the pod's disk, a constant-time service token that is required, and a turn's credential only to Lake at `LAKE_URL` |

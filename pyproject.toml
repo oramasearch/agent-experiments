@@ -1,6 +1,6 @@
 [project]
 name = "agent-experiments"
-version = "0.2.2"
+version = "0.3.0"
 description = "Designs, runs, watches, and explains AutoML studies"
 license = "MIT"
 readme = "README.md"
