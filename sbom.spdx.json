@@ -2,17 +2,17 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "agent-experiments-888dc4eb690e",
-  "documentNamespace": "https://github.com/oramasearch/agent-experiments/sbom/888dc4eb690e7d2dd392e0e34bf76247e8428079",
+  "name": "agent-experiments-v0.3.0",
+  "documentNamespace": "https://github.com/oramasearch/agent-experiments/sbom/7578bd13aef48ce37bf488096fc5c27fe22563f9",
   "creationInfo": {
-    "created": "2026-11-16T06:25:11Z",
+    "created": "2026-11-16T07:26:02Z",
     "creators": [
       "Organization: OramaSearch, Inc.",
       "Tool: tools/sbom.py",
       "Tool: syft"
     ],
     "licenseListVersion": "3.29",
-    "comment": "Made from source commit 888dc4eb690e7d2dd392e0e34bf76247e8428079 by tools/sbom.py."
+    "comment": "Made from source commit 7578bd13aef48ce37bf488096fc5c27fe22563f9 by tools/sbom.py."
   },
   "documentDescribes": [
     "SPDXRef-DocumentRoot"
@@ -20,8 +20,8 @@
   "packages": [
     {
       "name": "agent-experiments",
-      "SPDXID": "SPDXRef-Package-python-agent-experiments-1d4fc48e92646057",
-      "versionInfo": "0.2.2",
+      "SPDXID": "SPDXRef-Package-python-agent-experiments-769eb88d272b1d5d",
+      "versionInfo": "0.3.0",
       "supplier": "NOASSERTION",
       "downloadLocation": "NOASSERTION",
       "filesAnalyzed": false,
@@ -33,174 +33,174 @@
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python-agent-experiments:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python-agent-experiments:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python-agent-experiments:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python-agent-experiments:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python_agent_experiments:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python_agent_experiments:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python_agent_experiments:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python_agent_experiments:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent-experiments:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent-experiments:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent-experiments:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent-experiments:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent_experiments:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent_experiments:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent_experiments:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent_experiments:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python-agent-experiments:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python-agent-experiments:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python-agent-experiments:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python-agent-experiments:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python_agent_experiments:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python_agent_experiments:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python_agent_experiments:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python_agent_experiments:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python-agent:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python-agent:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python-agent:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python-agent:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python_agent:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python_agent:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python_agent:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python_agent:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent-experiments:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent-experiments:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent-experiments:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent-experiments:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent_experiments:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent_experiments:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent_experiments:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent_experiments:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python-agent:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python-agent:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python-agent:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python-agent:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python_agent:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python_agent:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python_agent:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python_agent:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:python:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:python:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:agent:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:agent:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:pypi/agent-experiments@0.2.2"
+          "referenceLocator": "pkg:pypi/agent-experiments@0.3.0"
         }
       ]
     },
     {
       "name": "agent-experiments",
       "SPDXID": "SPDXRef-DocumentRoot",
-      "versionInfo": "888dc4eb690e",
+      "versionInfo": "v0.3.0",
       "downloadLocation": "git+https://github.com/oramasearch/agent-experiments.git",
       "homepage": "https://github.com/oramasearch/agent-experiments",
       "filesAnalyzed": false,
@@ -2501,17 +2501,17 @@
       "spdxElementId": "SPDXRef-DocumentRoot"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-python-agent-experiments-1d4fc48e92646057",
+      "relatedSpdxElement": "SPDXRef-Package-python-agent-experiments-769eb88d272b1d5d",
       "relationshipType": "CONTAINS",
       "spdxElementId": "SPDXRef-DocumentRoot"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-python-agent-experiments-1d4fc48e92646057",
+      "relatedSpdxElement": "SPDXRef-Package-python-agent-experiments-769eb88d272b1d5d",
       "relationshipType": "DEPENDENCY_OF",
       "spdxElementId": "SPDXRef-Package-python-httpx-b8665b7937415e27"
     },
     {
-      "relatedSpdxElement": "SPDXRef-Package-python-agent-experiments-1d4fc48e92646057",
+      "relatedSpdxElement": "SPDXRef-Package-python-agent-experiments-769eb88d272b1d5d",
       "relationshipType": "DEPENDENCY_OF",
       "spdxElementId": "SPDXRef-Package-python-openai-4db7e8c29e4a9493"
     },

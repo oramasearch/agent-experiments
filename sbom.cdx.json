@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.7.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
-  "serialNumber": "urn:uuid:f6fe271d-62ea-5410-8ea7-3c010e28615d",
+  "serialNumber": "urn:uuid:251f01cb-45fc-554b-98cd-b73488d64d84",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-11-16T06:25:11Z",
+    "timestamp": "2026-11-16T07:26:02Z",
     "tools": {
       "components": [
         {
@@ -24,12 +24,12 @@
   },
   "components": [
     {
-      "bom-ref": "pkg:pypi/agent-experiments@0.2.2?package-id=Package-python-agent-experiments-1d4fc48e92646057",
+      "bom-ref": "pkg:pypi/agent-experiments@0.3.0?package-id=Package-python-agent-experiments-769eb88d272b1d5d",
       "type": "library",
       "name": "agent-experiments",
-      "version": "0.2.2",
-      "cpe": "cpe:2.3:a:python-agent-experiments:python-agent-experiments:0.2.2:*:*:*:*:*:*:*",
-      "purl": "pkg:pypi/agent-experiments@0.2.2",
+      "version": "0.3.0",
+      "cpe": "cpe:2.3:a:python-agent-experiments:python-agent-experiments:0.3.0:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/agent-experiments@0.3.0",
       "properties": [
         {
           "name": "syft:package:language",
@@ -41,127 +41,127 @@
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python-agent-experiments:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python-agent-experiments:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python_agent_experiments:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python_agent_experiments:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python_agent_experiments:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python_agent_experiments:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent-experiments:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent-experiments:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent-experiments:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent-experiments:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent_experiments:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent_experiments:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent_experiments:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent_experiments:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python-agent-experiments:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python-agent-experiments:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python-agent-experiments:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python-agent-experiments:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python_agent_experiments:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python_agent_experiments:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python_agent_experiments:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python_agent_experiments:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python-agent:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python-agent:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python-agent:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python-agent:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python_agent:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python_agent:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python_agent:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python_agent:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent-experiments:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent-experiments:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent-experiments:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent-experiments:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent_experiments:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent_experiments:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent_experiments:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent_experiments:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent:python-agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent:python-agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent:python_agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent:python_agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python-agent:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python-agent:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python-agent:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python-agent:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python_agent:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python_agent:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python_agent:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python_agent:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:python:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:python:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent:agent-experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent:agent-experiments:0.3.0:*:*:*:*:*:*:*"
         },
         {
           "name": "syft:cpe23",
-          "value": "cpe:2.3:a:agent:agent_experiments:0.2.2:*:*:*:*:*:*:*"
+          "value": "cpe:2.3:a:agent:agent_experiments:0.3.0:*:*:*:*:*:*:*"
         }
       ]
     },
@@ -169,7 +169,7 @@
       "bom-ref": "DocumentRoot",
       "type": "library",
       "name": "agent-experiments",
-      "version": "888dc4eb690e",
+      "version": "v0.3.0",
       "licenses": [
         {
           "license": {
@@ -1970,7 +1970,7 @@
       ]
     },
     {
-      "ref": "pkg:pypi/agent-experiments@0.2.2?package-id=Package-python-agent-experiments-1d4fc48e92646057",
+      "ref": "pkg:pypi/agent-experiments@0.3.0?package-id=Package-python-agent-experiments-769eb88d272b1d5d",
       "dependsOn": [
         "pkg:pypi/httpx@0.28.1?package-id=Package-python-httpx-b8665b7937415e27",
         "pkg:pypi/openai@3.20.0?package-id=Package-python-openai-4db7e8c29e4a9493"
