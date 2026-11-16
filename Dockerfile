@@ -1,4 +1,6 @@
 # syntax=docker/dockerfile:1
+# SPDX-License-Identifier: MIT
+
 # ExperimentsAgent is private on Docker Hub as oramasearch/agent-experiments.
 # Bases are pinned by their multi-platform index digest (lake#1003); a new base is a reviewed
 # change of the digest, not a moved tag.

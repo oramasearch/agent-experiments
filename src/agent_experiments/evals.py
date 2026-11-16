@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 """Evaluations for design quality, divergence stopping, and promotion confirmation."""
 
 from __future__ import annotations

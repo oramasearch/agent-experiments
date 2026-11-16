@@ -2,6 +2,7 @@
 name = "agent-experiments"
 version = "0.2.2"
 description = "Designs, runs, watches, and explains AutoML studies"
+license = "MIT"
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
 dependencies = [

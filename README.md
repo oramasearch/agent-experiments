@@ -69,3 +69,9 @@ never authorizes `promote_trial`.
 capabilities, event cursors, divergence rules, analysis, and promotion. Run
 `uv run experiments-agent-evals` for the known-good search-space, non-finite-loss stop, and
 promotion-without-confirmation cases against deterministic fake lake facts.
+
+## License
+
+MIT, see [LICENSE](LICENSE). Third-party components and their licenses are in
+[THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES). Contributions are welcome under the
+[Contributor License Agreement](CLA.md); see [CONTRIBUTING.md](CONTRIBUTING.md).
